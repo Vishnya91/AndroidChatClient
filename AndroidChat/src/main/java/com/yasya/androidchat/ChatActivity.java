@@ -38,7 +38,6 @@ public class ChatActivity extends Activity {
     FragListView fragList;
     Receiver receiver;
     boolean connected;
-    boolean fromPause;
     Button btnSend;
     EditText txtEdit;
     private static long back_pressed;
@@ -58,7 +57,7 @@ public class ChatActivity extends Activity {
         txtEdit = (EditText) findViewById(R.id.txt_inputText);
         setOrientation();
         checkConnectivity();
-        fromPause = true;
+
         msgList = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1);
         msgView.setAdapter(msgList);
@@ -101,6 +100,7 @@ public class ChatActivity extends Activity {
         } else if (connected) {
             Toast.makeText(this, "Connected!", Toast.LENGTH_LONG).show();
             initFragment();
+
         }
         //todo check for internet connection and connected = true
     }
@@ -169,12 +169,12 @@ public class ChatActivity extends Activity {
             public void onClick(DialogInterface dialog, int id) {
                 String login = setLogin.getText().toString();
                 // login.matches("");
-                if (login.isEmpty()) {
+                if (login.matches("")) {
                     Toast.makeText(getApplicationContext(), "You did not enter a login", Toast.LENGTH_SHORT).show();
+                } else {
+                    receiver.receiveLogin(login);
+                    sendLoginToServer();
                 }
-                receiver.receiveLogin(login);
-                sendLoginToServer();
-
             }
         });
 
@@ -253,21 +253,6 @@ public class ChatActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //  if (fromPause){
-        // checkConnectivity();
-        // }
-    }
-
-
-    @Override
     public void onBackPressed() {
         if (back_pressed + 2000 > System.currentTimeMillis()) super.onBackPressed();
         else
@@ -276,8 +261,7 @@ public class ChatActivity extends Activity {
     }
     /*
      * private Handler handler = new Handler() {
-	 * 
-	 * @Override // When there is message, execute this method public void
+     * @Override // When there is message, execute this method public void
 	 * handleMessage(Message msg) { super.handleMessage(msg); String message =
 	 * (String) msg.obj; // Update UI msgList.add(message);
 	 * msgView.setAdapter(msgList);

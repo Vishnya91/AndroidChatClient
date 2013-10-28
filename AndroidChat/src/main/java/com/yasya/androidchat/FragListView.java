@@ -25,9 +25,7 @@ public class FragListView extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayList<String> user = receiver.UIList();
-
         ListAdapter adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.item, user);
-
         setListAdapter(adapter);
     }
        /* mp = new MediaPlayer();
