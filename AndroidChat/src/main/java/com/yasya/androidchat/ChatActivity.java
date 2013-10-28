@@ -4,19 +4,22 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -28,13 +31,17 @@ import java.net.UnknownHostException;
 
 public class ChatActivity extends Activity {
 
-    public ListView msgView;
-    public ArrayAdapter<String> msgList;
+    ListView msgView;
+    ArrayAdapter<String> msgList;
     Socket socket;
     NetworkTask networktask;
     FragListView fragList;
     Receiver receiver;
     boolean connected;
+    boolean fromPause;
+    Button btnSend;
+    EditText txtEdit;
+    private static long back_pressed;
 
     /**
      * Called when the activity is first created.
@@ -46,29 +53,21 @@ public class ChatActivity extends Activity {
         setContentView(R.layout.main);
         receiver = new Receiver();
         fragList = new FragListView();
-
-        setOrientation();
-
-        FragmentManager fMan = getFragmentManager();
-        FragmentTransaction ft = fMan.beginTransaction();
-        ft.add(R.id.frame, fragList);
-        ft.commit();
-
         msgView = (ListView) findViewById(R.id.listView);
+        btnSend = (Button) findViewById(R.id.btn_Send);
+        txtEdit = (EditText) findViewById(R.id.txt_inputText);
+        setOrientation();
+        checkConnectivity();
+        fromPause = true;
         msgList = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1);
         msgView.setAdapter(msgList);
-
         networktask = new NetworkTask();
         networktask.execute();
 
-        Button btnSend = (Button) findViewById(R.id.btn_Send);
-
         btnSend.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                final EditText txtEdit = (EditText) findViewById(R.id.txt_inputText);
                 receiver.receiveMessage(txtEdit.getText().toString());
                 sendMessageToServer(receiver.outMessage());
                 msgView.smoothScrollToPosition(msgList.getCount() - 1);
@@ -78,8 +77,50 @@ public class ChatActivity extends Activity {
 
     }
 
+    private void initFragment() {
+        TextView connInfo = (TextView) findViewById(R.id.txt_conn_info);
+        if (receiver.UIList() != null) {
+            connInfo.setVisibility(View.GONE);
+            fragList = new FragListView();
+            FragmentManager fMan = getFragmentManager();
+            FragmentTransaction ft = fMan.beginTransaction();
+            ft.add(R.id.frame, fragList);
+            ft.commit();
+        } else {
+            connInfo.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void checkConnectivity() {
+        if (!connected && isNetworkAvailable()) {
+            getLogin();
+        } else if (!isNetworkAvailable()) {
+            btnSend.setEnabled(false);
+            txtEdit.setEnabled(false);
+            Toast.makeText(this, "Network isn't available", Toast.LENGTH_LONG).show();
+        } else if (connected) {
+            Toast.makeText(this, "Connected!", Toast.LENGTH_LONG).show();
+            initFragment();
+        }
         //todo check for internet connection and connected = true
+    }
+
+    public boolean isNetworkAvailable() {
+        Context context = getApplicationContext();
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity == null) {
+            Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
+        } else {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private void setOrientation() {
@@ -97,15 +138,22 @@ public class ChatActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+       /* MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);*/
+        menu.add(0, 1, 0, "Exit");
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(0, connected);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_exit:
+            case 1:
                 logOut();
                 return true;
         }
@@ -120,26 +168,25 @@ public class ChatActivity extends Activity {
 
             public void onClick(DialogInterface dialog, int id) {
                 String login = setLogin.getText().toString();
+                // login.matches("");
+                if (login.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "You did not enter a login", Toast.LENGTH_SHORT).show();
+                }
                 receiver.receiveLogin(login);
                 sendLoginToServer();
+
             }
         });
-        builder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        builder.setTitle("Enter Login");
 
+        builder.setTitle("Enter Login");
         builder.setView(setLogin);
 
         AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
     public void sendMessageToServer(String str) {
-
         final String str1 = str;
         PrintWriter out;
         try {
@@ -154,6 +201,7 @@ public class ChatActivity extends Activity {
 
     public void sendLoginToServer() {
         String login = receiver.outLogin();
+        Toast.makeText(getApplicationContext(), login, Toast.LENGTH_LONG).show();
         PrintWriter out;
         try {
             out = new PrintWriter(socket.getOutputStream());
@@ -170,14 +218,11 @@ public class ChatActivity extends Activity {
         try {
             in = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         while (true) {
             String msg = null;
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             try {
                 msg = in.readLine();
             } catch (Exception e) {
@@ -187,13 +232,12 @@ public class ChatActivity extends Activity {
                 break;
             } else {
                 /*
-				 * Message message = Message.obtain(); // Creates an new Message
+                 * Message message = Message.obtain(); // Creates an new Message
 				 * // instance message.obj = msg; // Put the string into
 				 * Message, into "obj" // field. message.setTarget(handler); //
 				 * Set the Handler message.sendToTarget();
 				 */
                 receiver.receiveString(msg);
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 msgList.add(receiver.UIMessage());
                 msgView.setAdapter(msgList);
             }
@@ -208,8 +252,30 @@ public class ChatActivity extends Activity {
         }
     }
 
-	/*
-	 * private Handler handler = new Handler() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //  if (fromPause){
+        // checkConnectivity();
+        // }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis()) super.onBackPressed();
+        else
+            Toast.makeText(getBaseContext(), "Press once again to exit!", Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
+    }
+    /*
+     * private Handler handler = new Handler() {
 	 * 
 	 * @Override // When there is message, execute this method public void
 	 * handleMessage(Message msg) { super.handleMessage(msg); String message =
@@ -219,25 +285,20 @@ public class ChatActivity extends Activity {
 	 */
 
     public class NetworkTask extends AsyncTask<Void, Void, Void> {
-        // Activity activity = new ChatActivity();
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected Void doInBackground(Void... params) { // This runs on a
-
+        protected Void doInBackground(Void... params) {
             // String host = "10.0.2.2";
             // String host2 = "127.0.0.1";
             String host3 = "192.168.0.106";
             try {
-
                 socket = new Socket(host3, 6005);
                 connected = socket.isConnected();
                 receive();
-
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {

@@ -1,28 +1,18 @@
 package com.yasya.androidchat;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ListFragment;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+
+import java.util.ArrayList;
 
 public class FragListView extends ListFragment {
     Receiver receiver;
-   
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -31,15 +21,15 @@ public class FragListView extends ListFragment {
         return view;
     }
 
-   @Override
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayList<String> user = receiver.UIList();
-        
+
         ListAdapter adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.item, user);
 
         setListAdapter(adapter);
-   }
+    }
        /* mp = new MediaPlayer();
         audioList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> song;

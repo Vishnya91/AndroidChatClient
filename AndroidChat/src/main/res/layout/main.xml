@@ -1,37 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:weightSum="3">
 
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="0.695">
+
+        <TextView
+            android:id="@+id/txt_conn_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No internet connection"
+            android:gravity="center"
+            android:layout_gravity="center" />
 
     </FrameLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.004"
+        android:background="@android:color/holo_green_light" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:orientation="vertical" >
+        android:layout_weight="2.3"
+        android:orientation="vertical">
 
         <ListView
             android:id="@+id/listView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0" >
-        </ListView>
+            android:layout_weight="1.0" />
 
         <LinearLayout
             android:id="@+id/llout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/txt_inputText"

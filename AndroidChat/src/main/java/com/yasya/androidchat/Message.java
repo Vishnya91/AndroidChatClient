@@ -1,17 +1,17 @@
 package com.yasya.androidchat;
 
 public class Message {
-	private String ClassName = "Message";
-	
-	private String message = "";
+    private String ClassName = "Message";
 
-	public String getMessage() {
-		return message;
-	}
+    private String message = "";
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+
 }

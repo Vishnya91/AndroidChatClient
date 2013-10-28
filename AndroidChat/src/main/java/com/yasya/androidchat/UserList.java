@@ -3,17 +3,17 @@ package com.yasya.androidchat;
 import java.util.ArrayList;
 
 public class UserList {
-	private String ClassName = "UserList";
-	
-	private ArrayList<UserName> userList= null;
+    private String ClassName = "UserList";
 
-	public ArrayList<UserName> getUserList() {
-		return userList;
-	}
+    private ArrayList<UserName> userList = null;
 
-	public void setUserList(ArrayList<UserName> userList) {
-		this.userList = userList;
-	}
-	
-	
+    public ArrayList<UserName> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(ArrayList<UserName> userList) {
+        this.userList = userList;
+    }
+
+
 }

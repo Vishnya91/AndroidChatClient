@@ -22,7 +22,7 @@
         <item name="android:listViewWhiteStyle">@style/ListView.Chat.White</item>
 
         <item name="android:spinnerItemStyle">@style/SpinnerItem.Chat</item>
-        
+
     </style>
 
     <style name="ActionBar.Solid.Chat" parent="@android:style/Widget.Holo.ActionBar.Solid">
@@ -38,7 +38,7 @@
     </style>
 
     <style name="PopupMenu.Chat" parent="@android:style/Widget.Holo.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_chat</item>	
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_chat</item>
     </style>
 
     <style name="DropDownListView.Chat" parent="@android:style/Widget.Holo.ListView.DropDown">
@@ -54,11 +54,11 @@
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_chat</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_chat</item>
     </style>
-    
+
     <style name="ProgressBar.Chat" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_chat</item>
     </style>
-    
+
     <style name="ActionButton.CloseMode.Chat" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_chat</item>
     </style>
@@ -69,32 +69,32 @@
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Chat</item>
     </style>
 
-	<style name="EditText.Chat" parent="android:Widget.EditText">
-	  <item name="android:background">@drawable/edit_text_holo_dark</item>
-	  <item name="android:textColor">#ffffff</item>
-  </style>
+    <style name="EditText.Chat" parent="android:Widget.EditText">
+        <item name="android:background">@drawable/edit_text_holo_dark</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
 
-  <style name="Button.Chat" parent="android:Widget.Button">
-	  <item name="android:background">@drawable/btn_default_holo_dark</item>
-	  <item name="android:minHeight">48dip</item>
-	  <item name="android:minWidth">64dip</item>
-	  <item name="android:textColor">#ffffff</item>
-  </style>
+    <style name="Button.Chat" parent="android:Widget.Button">
+        <item name="android:background">@drawable/btn_default_holo_dark</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:minWidth">64dip</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
 
-  <style name="ImageButton.Chat" parent="android:Widget.ImageButton">
-	  <item name="android:background">@drawable/btn_default_holo_dark</item>
-  </style>
+    <style name="ImageButton.Chat" parent="android:Widget.ImageButton">
+        <item name="android:background">@drawable/btn_default_holo_dark</item>
+    </style>
 
-  <style name="ListView.Chat" parent="android:Widget.ListView">
-      <item name="android:listSelector">@drawable/list_selector_holo_dark</item>
-  </style>
+    <style name="ListView.Chat" parent="android:Widget.ListView">
+        <item name="android:listSelector">@drawable/list_selector_holo_dark</item>
+    </style>
 
-  <style name="ListView.Chat.White" parent="android:Widget.ListView.White">
-      <item name="android:listSelector">@drawable/list_selector_holo_dark</item>
-  </style>
+    <style name="ListView.Chat.White" parent="android:Widget.ListView.White">
+        <item name="android:listSelector">@drawable/list_selector_holo_dark</item>
+    </style>
 
-  <style name="SpinnerItem.Chat" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
-      <item name="android:textColor">#ffffff</item>
-  </style>
+    <style name="SpinnerItem.Chat" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">#ffffff</item>
+    </style>
 
 </resources>
