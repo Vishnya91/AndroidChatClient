@@ -2,22 +2,34 @@ package com.yasya.androidchat;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class FragListView extends ListFragment {
     Receiver receiver;
+    private static FragListView instance;
 
+    public FragListView() {
+    }
+
+    public static FragListView getInstance() {
+        if (instance == null) {
+            instance = new FragListView();
+        }
+        return instance;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fraglistview, null);
-        receiver = new Receiver();
+        receiver = Receiver.getInstance();
         return view;
     }
 
@@ -25,8 +37,10 @@ public class FragListView extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayList<String> user = receiver.UIList();
-        ListAdapter adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.item, user);
+        Log.e("array from frag", user.toString());
+        ListAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.item, user);
         setListAdapter(adapter);
+
     }
        /* mp = new MediaPlayer();
         audioList = new ArrayList<HashMap<String, String>>();

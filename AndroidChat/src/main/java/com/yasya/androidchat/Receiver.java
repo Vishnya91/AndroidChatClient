@@ -10,7 +10,18 @@ public class Receiver {
     UserName username = new UserName();
     Message message = new Message();
     String msgUI;
-    ArrayList<String> users;
+    static ArrayList<String> users;
+    private static Receiver instance;
+
+    public Receiver() {
+    }
+
+    public static Receiver getInstance() {
+        if (instance == null) {
+            instance = new Receiver();
+        }
+        return instance;
+    }
 
     public void receiveString(String str) {
         if (str.contains("Message")) {
@@ -26,10 +37,10 @@ public class Receiver {
             users = new ArrayList<String>();
             try {
                 JSONObject list = new JSONObject(str);
-                JSONArray jsonArray = list.getJSONArray("UserList");
+                JSONArray jsonArray = list.getJSONArray("userList");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jObject = jsonArray.getJSONObject(i);
-                    String user = jObject.getString("UserName");
+                    String user = (String) jObject.get("userName");
                     users.add(user);
                 }
             } catch (JSONException e) {
@@ -50,7 +61,7 @@ public class Receiver {
         JSONObject login = new JSONObject();
         try {
             login.put("ClassName", "UserName");
-            login.put("UserName", username.getUserName());
+            login.put("userName", username.getUserName());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -63,6 +74,7 @@ public class Receiver {
         try {
             outMessage.put("ClassName", "Message");
             outMessage.put("message", message.getMessage());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
