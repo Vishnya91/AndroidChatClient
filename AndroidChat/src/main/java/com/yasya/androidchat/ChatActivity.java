@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,17 +24,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Message;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class ChatActivity extends Activity {
 
+    Context context;
     ListView msgView;
     ArrayAdapter<String> msgList;
     Socket socket;
@@ -53,6 +56,7 @@ public class ChatActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        context = getApplicationContext();
         receiver = new Receiver();
         fragList = new FragListView();
         msgView = (ListView) findViewById(R.id.listView);
@@ -94,7 +98,7 @@ public class ChatActivity extends Activity {
     }
 
     private void checkConnectivity() {
-        if (!connected && isNetworkAvailable()) {
+        if (isNetworkAvailable()) {
             getLogin();
             this.setTitle("Android Chat - disconnected");
             this.setTitleColor(Color.RED);
@@ -177,7 +181,6 @@ public class ChatActivity extends Activity {
 
             public void onClick(DialogInterface dialog, int id) {
                 String login = setLogin.getText().toString();
-                // login.matches("");
                 if (login.matches("")) {
                     Toast.makeText(getApplicationContext(), "You did not enter a login", Toast.LENGTH_SHORT).show();
                 } else {
@@ -196,44 +199,44 @@ public class ChatActivity extends Activity {
     }
 
     public void sendMessageToServer(String str) {
-        final String str1 = str;
-        PrintWriter out;
+        str = receiver.outMessage();
         try {
-            out = new PrintWriter(socket.getOutputStream());
-            out.println(str1);
-            out.flush();
+            OutputStream os = socket.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeUTF(str);
+            dos.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void sendLoginToServer() {
         String login = receiver.outLogin();
-        Toast.makeText(getApplicationContext(), login, Toast.LENGTH_LONG).show();
-        PrintWriter out;
+        Toast.makeText(context, login, Toast.LENGTH_LONG).show();
         try {
-            out = new PrintWriter(socket.getOutputStream());
-            out.print(login);
-            out.flush();
+            OutputStream os = socket.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeUTF(login);
+            dos.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void receive() {
-        BufferedReader in = null;
+        InputStream os;
+        DataInputStream dos = null;
         try {
-            in = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()));
-        } catch (Exception e) {
+            os = socket.getInputStream();
+            dos = new DataInputStream(os);
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
         while (true) {
             String msg = null;
             try {
-                msg = in.readLine();
+                msg = dos.readUTF();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -290,7 +293,7 @@ public class ChatActivity extends Activity {
         protected Void doInBackground(Void... params) {
             // String host = "10.0.2.2";
             // String host2 = "127.0.0.1";
-            String host3 = "192.168.0.106";
+            String host3 = "192.168.0.103";
             try {
                 socket = new Socket(host3, 6005);
                 connected = socket.isConnected();

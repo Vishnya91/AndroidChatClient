@@ -40,7 +40,6 @@ public class Receiver {
 
     public void receiveLogin(String str) {
         username.setUserName(str);
-
     }
 
     public void receiveMessage(String str) {
@@ -49,14 +48,12 @@ public class Receiver {
 
     public String outLogin() {
         JSONObject login = new JSONObject();
-
         try {
             login.put("ClassName", "UserName");
             login.put("UserName", username.getUserName());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return login.toString();
     }
 
@@ -69,18 +66,14 @@ public class Receiver {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return outMessage.toString();
     }
 
     public ArrayList<String> UIList() {
-
         return users;
     }
 
     public String UIMessage() {
-
         return msgUI;
     }
-
 }
